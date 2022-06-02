@@ -21,7 +21,7 @@ CookieClicker, v. 2.031
     for(const mutation of mutationList) {
       if (mutation.target.childNodes[0].classList.contains('enabled')) {
         mutation.target.childNodes[0].click();
-      }
+      };
     };
   };
 
@@ -36,10 +36,49 @@ CookieClicker, v. 2.031
   // Auto click buildings when they are enabled
   for(const product of products) {
     const productOptions = { attributes: true };
+
+    const shouldBuy = function(p, c, s, i) {
+      const ret = ( p - (0.15355651529 * c) / (s * i) );
+      return ret <= 1
+              ? true
+              : false;
+    };
+
     const productCb = function(mutationList, productObserver) {
+      const cps = document.querySelector('#cookiesPerSecond');
+
       for(const mutation of mutationList) {
+
         if ( mutation.target.classList.contains('enabled')) {
+
+          // Convert number names to Numbers
+          const arrToNum = function (arr) {
+            const a = Number(arr[0]);
+            const b = arr[1].substring(0, 2) == '' ? 1
+            : arr[1].substring(0, 2) == 'Tho' ? 1.0e+3
+            : arr[1].substring(0, 2) == 'Mil' ? 1.0e+6
+            : arr[1].substring(0, 2) == 'Tri' ? 1.0e+9
+            : arr[1].substring(0, 2) == 'Qua' ? 1.0e+12
+            : arr[1].substring(0, 2) == 'Qui' ? 1.0e+15
+            : arr[1].substring(0, 2) == 'Sex' ? 1.0e+18
+            : arr[1].substring(0, 2) == 'Sep' ? 1.0e+21
+            : arr[1].substring(0, 2) == 'Oct' ? 1.0e+24
+            : arr[1].substring(0, 2) == 'Non' ? 1.0e+27
+            : 1.0e+30
+            return a * b;
+          };
+
+          const t = mutation.target;
+          const p = arrToNum(t.querySelector('.price').innerText.split(' '));
+          const c = Number(t.querySelector('.owned').innerText);
+          const s = arrToNum(cps.innerText.match(/[1-9].*/g)[0].split(' '));
+          const i = Number(t.attributes.id.value.slice(-1));
+
+          const buy = shouldBuy(p,c,s,i);
+
+          if (buy) {
             mutation.target.click();
+          };
         };
       };
     };
@@ -59,7 +98,7 @@ CookieClicker, v. 2.031
     for(const mutation of mutationList) {
       if (mutation.target.childNodes.length > 0) {
         mutation.target.childNodes[0].click();
-      }
+      };
     };
   };
 
@@ -67,24 +106,3 @@ CookieClicker, v. 2.031
   shimmerObserver.observe(shimmers[0], shimmerOptions);
 
 })();
-
-/*
-15	0.1
-100	1
-1,100	8
-12,000	47
-130,000	260
-1.4 million	1,400
-20 million	7,800
-330 million	44,000
-5.1 billion	260,000
-75 billion	1.6 million
-1 trillion	10 million
-14 trillion	65 million
-170 trillion	430 million
-2.1 quadrillion	2.9 billion
-26 quadrillion	21 billion
-310 quadrillion	150 billion
-71 quintillion	1.1 trillion
-12 sextillion	8.3 trillion
-*/
